@@ -1,248 +1,227 @@
 #include <iostream>
 using namespace std;
 
-// Utility functions for array operations
+// Helper functions for array operations
 class ArrayHelper {
 public:
-    // Swap two elements in an array
-    static void swap(int arr[], int i, int j) {
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
+  static void swap(int arr[], int pos1, int pos2) {
+    int temp = arr[pos1];
+    arr[pos1] = arr[pos2];
+    arr[pos2] = temp;
+  }
 
-    // Print the contents of an array
-    static void printArray(int arr[], int size) {
-        for (int i = 0; i < size; i++) {
-            cout << arr[i] << " ";
-        }
-        cout << endl;
+  static void printArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+      cout << arr[i] << " ";
     }
-
-    // Generate a random array with values in a specified range
-    static int* generateRandomArray(int size, int minVal, int maxVal) {
-        int* arr = new int[size];
-        for (int i = 0; i < size; i++) {
-            arr[i] = minVal + (rand() % (maxVal - minVal + 1));
-        }
-        return arr;
-    }
+    cout << endl;
+  }
 };
 
-// Dynamic array implementation
-class ArrayList {
-private:
-    int* arr;
-    int capacity;
-    int size;
-
-    // Resize the internal array to a new capacity
-    void resize(int newCapacity) {
-        int* newArr = new int[newCapacity];
-        for (int i = 0; i < size; i++) {
-            newArr[i] = arr[i];
-        }
-        delete[] arr;
-        arr = newArr;
-        capacity = newCapacity;
-    }
-
+// Search algorithms
+class SearchAlgorithms {
 public:
-    ArrayList(int initialCapacity = 10) : capacity(initialCapacity), size(0) {
-        arr = new int[capacity];
+  // Iterative binary search
+  static int binarySearch(int arr[], int size, int target) {
+    int left = 0;
+    int right = size - 1;
+
+    while (left <= right) {
+      int middle = (left + right) / 2;
+
+      if (arr[middle] == target) {
+        return middle;
+      }
+
+      if (arr[middle] > target) {
+        right = middle - 1;
+      } else {
+        left = middle + 1;
+      }
     }
 
-    ~ArrayList() {
-        delete[] arr;
+    return -1; // Target not found
+  }
+
+  // Recursive binary search
+  static int binarySearchRecursive(int arr[], int left, int right, int target) {
+    if (left > right) {
+      return -1;
     }
 
-    // Add a new element to the array
-    void add(int value) {
-        if (size == capacity) resize(capacity * 2);
-        arr[size++] = value;
+    int middle = (left + right) / 2;
+
+    if (arr[middle] == target) {
+      return middle;
     }
 
-    // Remove an element at a specific index
-    void remove(int index) {
-        if (index < 0 || index >= size) {
-            cout << "Invalid index!" << endl;
-            return;
-        }
-        for (int i = index; i < size - 1; i++) {
-            arr[i] = arr[i + 1];
-        }
-        size--;
+    if (target < arr[middle]) {
+      return binarySearchRecursive(arr, left, middle - 1, target);
     }
 
-    // Get an element at a specific index
-    int get(int index) const {
-        if (index < 0 || index >= size) {
-            cout << "Invalid index!" << endl;
-            return -1;
-        }
-        return arr[index];
+    return binarySearchRecursive(arr, middle + 1, right, target);
+  }
+
+  // Linear search
+  static int linearSearch(int arr[], int size, int target) {
+    for (int i = 0; i < size; i++) {
+      if (arr[i] == target) {
+        return i;
+      }
+    }
+    return -1; // Target not found
+  }
+
+  // Recursive linear search
+  static int linearSearchRecursive(int arr[], int size, int target) {
+    if (size <= 0) {
+      return -1;
     }
 
-    // Replace an element at a specific index
-    void set(int index, int value) {
-        if (index < 0 || index >= size) {
-            cout << "Invalid index!" << endl;
-            return;
-        }
-        arr[index] = value;
+    if (arr[size - 1] == target) {
+      return size - 1;
     }
 
-    // Get the current size of the array
-    int getSize() const {
-        return size;
-    }
-
-    // Print the contents of the array
-    void print() const {
-        for (int i = 0; i < size; i++) {
-            cout << arr[i] << " ";
-        }
-        cout << endl;
-    }
+    return linearSearchRecursive(arr, size - 1, target);
+  }
 };
 
-// Linked list node structure
-struct Node {
-    int data;
-    Node* next;
-    Node(int value) : data(value), next(nullptr) {}
-};
-
-// Linked list implementation
-class LinkedList {
-private:
-    Node* head;
-    int size;
-
+// Sorting algorithms
+class SortingAlgorithms {
 public:
-    LinkedList() : head(nullptr), size(0) {}
-
-    ~LinkedList() {
-        Node* current = head;
-        while (current) {
-            Node* toDelete = current;
-            current = current->next;
-            delete toDelete;
+  // Bubble Sort
+  static void bubbleSort(int arr[], int size) {
+    bool swapped;
+    for (int i = 0; i < size - 1; i++) {
+      swapped = false;
+      for (int j = 0; j < size - i - 1; j++) {
+        if (arr[j] > arr[j + 1]) {
+          ArrayHelper::swap(arr, j, j + 1);
+          swapped = true;
         }
+      }
+      // If no swapping occurred, array is sorted
+      if (!swapped) {
+        break;
+      }
     }
+  }
 
-    // Add a new element to the front of the list
-    void addFront(int value) {
-        Node* newNode = new Node(value);
-        newNode->next = head;
-        head = newNode;
-        size++;
-    }
-
-    // Add a new element to the back of the list
-    void addBack(int value) {
-        Node* newNode = new Node(value);
-        if (!head) {
-            head = newNode;
-        } else {
-            Node* current = head;
-            while (current->next) {
-                current = current->next;
-            }
-            current->next = newNode;
+  // Selection Sort
+  static void selectionSort(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+      int minIndex = i;
+      for (int j = i + 1; j < size; j++) {
+        if (arr[j] < arr[minIndex]) {
+          minIndex = j;
         }
-        size++;
+      }
+      if (minIndex != i) {
+        ArrayHelper::swap(arr, i, minIndex);
+      }
+    }
+  }
+
+  // Insertion Sort
+  static void insertionSort(int arr[], int size) {
+    for (int i = 1; i < size; i++) {
+      int key = arr[i];
+      int j = i - 1;
+
+      while (j >= 0 && arr[j] > key) {
+        arr[j + 1] = arr[j];
+        j--;
+      }
+      arr[j + 1] = key;
+    }
+  }
+
+  // Quick Sort
+  static void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+      int pivotIndex = partition(arr, low, high);
+      quickSort(arr, low, pivotIndex - 1);
+      quickSort(arr, pivotIndex + 1, high);
+    }
+  }
+
+private:
+  static int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+      if (arr[j] <= pivot) {
+        i++;
+        ArrayHelper::swap(arr, i, j);
+      }
     }
 
-    // Remove the front element
-    void removeFront() {
-        if (!head) {
-            cout << "List is empty!" << endl;
-            return;
-        }
-        Node* toDelete = head;
-        head = head->next;
-        delete toDelete;
-        size--;
-    }
-
-    // Remove the back element
-    void removeBack() {
-        if (!head) {
-            cout << "List is empty!" << endl;
-            return;
-        }
-        if (!head->next) {
-            delete head;
-            head = nullptr;
-        } else {
-            Node* current = head;
-            while (current->next->next) {
-                current = current->next;
-            }
-            delete current->next;
-            current->next = nullptr;
-        }
-        size--;
-    }
-
-    // Get the first element of the list
-    int getFront() const {
-        return head ? head->data : -1;
-    }
-
-    // Check if the list is empty
-    bool isEmpty() const {
-        return head == nullptr;
-    }
-
-    // Get the size of the list
-    int getSize() const {
-        return size;
-    }
-
-    // Print the contents of the list
-    void print() const {
-        Node* current = head;
-        while (current) {
-            cout << current->data << " ";
-            current = current->next;
-        }
-        cout << endl;
-    }
+    ArrayHelper::swap(arr, i + 1, high);
+    return i + 1;
+  }
 };
 
-// Test program
+// Mathematical functions
+class MathFunctions {
+public:
+  // Calculate 2^n recursively
+  static int powerOfTwo(int n) {
+    if (n == 0) {
+      return 1;
+    }
+    return 2 * powerOfTwo(n - 1);
+  }
+
+  // Calculate combination (n choose k)
+  static int combination(int n, int k) {
+    if (k == 1) {
+      return n;
+    }
+    if (n == k || k == 0) {
+      return 1;
+    }
+    return combination(n - 1, k - 1) + combination(n - 1, k);
+  }
+
+  // Calculate median of an array
+  static int median(int arr[], int size) {
+    // First sort the array
+    SortingAlgorithms::bubbleSort(arr, size);
+
+    if (size % 2 != 0) {
+      return arr[size / 2];
+    }
+
+    return (arr[(size - 1) / 2] + arr[size / 2]) / 2;
+  }
+};
+
 int main() {
-    // Seed the random number generator
-    srand(time(0));
+  // Example usage
+  int testArray[] = {64, 34, 25, 12, 22, 11, 90};
+  int size = sizeof(testArray) / sizeof(testArray[0]);
 
-    // Test ArrayHelper
-    cout << "Testing ArrayHelper:" << endl;
-    int* randomArray = ArrayHelper::generateRandomArray(10, 1, 100);
-    ArrayHelper::printArray(randomArray, 10);
-    delete[] randomArray;
+  cout << "Original array: ";
+  ArrayHelper::printArray(testArray, size);
 
-    // Test ArrayList
-    cout << "\nTesting ArrayList:" << endl;
-    ArrayList arrayList;
-    for (int i = 0; i < 5; i++) {
-        arrayList.add(i * 10);
-    }
-    arrayList.print();
-    arrayList.remove(2);
-    arrayList.print();
+  // Test sorting
+  SortingAlgorithms::bubbleSort(testArray, size);
+  cout << "Sorted array: ";
+  ArrayHelper::printArray(testArray, size);
 
-    // Test LinkedList
-    cout << "\nTesting LinkedList:" << endl;
-    LinkedList linkedList;
-    for (int i = 0; i < 5; i++) {
-        linkedList.addBack(i * 10);
-    }
-    linkedList.print();
-    linkedList.removeFront();
-    linkedList.addFront(5);
-    linkedList.print();
+  // Test searching
+  int target = 25;
+  int result = SearchAlgorithms::binarySearch(testArray, size, target);
+  if (result != -1) {
+    cout << "Element " << target << " found at index " << result << endl;
+  } else {
+    cout << "Element " << target << " not found" << endl;
+  }
 
-    return 0;
+  // Test math functions
+  cout << "2^5 = " << MathFunctions::powerOfTwo(5) << endl;
+  cout << "Median: " << MathFunctions::median(testArray, size) << endl;
+
+  return 0;
 }
