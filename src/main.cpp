@@ -204,44 +204,41 @@ public:
 // Search algorithms
 class SearchAlgorithms {
 public:
-  // Iterative binary search
   static int binarySearch(int arr[], int size, int target) {
-    int left = 0;
-    int right = size - 1;
+      int left = 0,right = size - 1;  // Initialize right to last index
 
-    while (left <= right) {
-      int middle = (left + right) / 2;
-
-      if (arr[middle] == target) {
-        return middle;
+      while (left <= right) {  // KEY DIFFERENCE 1: Uses <= to ensure all elements are checked
+          // KEY DIFFERENCE 2: Simple mid calculation is fine since overflow is rare in practice
+          int mid = (left + right) / 2;
+          if (arr[mid] == target) {
+              return mid;
+          }else if (arr[mid] > target) {
+              right = mid - 1;  // KEY DIFFERENCE 3: Properly reduces right boundary
+          }else {
+              left = mid + 1;
+          }
       }
-
-      if (arr[middle] > target) {
-        right = middle - 1;
-      } else {
-        left = middle + 1;
-      }
-    }
-
-    return -1; // Target not found
+      return -1;  // KEY DIFFERENCE 4: Always returns -1 if target not found
   }
 
+  // Defective Binary Search Implementation (with fixes commented)
   static int defectiveBinarySearch(int arr[], int size, int target) {
-    int left = 0, right = size - 1;
+      int left = 0, right = size - 1;
 
-    while (left < right) { // Note: This should be <=, but is defective
-        int mid = left + (right - left) / 2;
-        if (arr[mid] == target)
-            return mid; // Target found
-        else if (arr[mid] < target)
-            left = mid + 1; // Search the right half
-        else
-            right = mid; // Flawed: right is not reduced correctly
-    }
-
-    return (arr[left] == target) ? left : -1; // Fails for certain cases
+      // DEFECT 1: Uses < instead of <=, which can miss checking the last element
+      while (left < right) {  // Should be: while (left <= right)
+          // More robust mid calculation to prevent integer overflow
+          int mid = left + (right - left) / 2;
+          if (arr[mid] == target) {
+              return mid;
+          }else if (arr[mid] < target) {
+              left = mid + 1;
+          }else {
+              right = mid;                            // DEFECT 2: Doesn't decrease right boundary properly
+          }                                          // Should be: right = mid - 1
+      }
+      return  -1;                                  // DEFECT 3: Final check is unreliable due to previous defects
   }
-
 };
 
 // Sorting algorithms (unchanged from your code)
