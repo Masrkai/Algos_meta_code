@@ -1,6 +1,4 @@
 #include <iostream>
-#include <cstdlib> // For rand() and srand()
-#include <ctime>   // For time()
 using namespace std;
 
 // Helper functions for array operations
@@ -266,6 +264,11 @@ public:
   }
 };
 
+static int separate(){
+cout << "-------------------------------------------------------------------------- "<< endl ;
+return 0;
+};
+
 // Main function to demonstrate functionality
 int main() {
   srand(static_cast<unsigned int>(time(0))); // Seed for random numbers
@@ -274,6 +277,8 @@ int main() {
   int size = 20;
   int minimum_num = 1, maximum_num = 100;
   int* randomArray = ArrayHelper::generateRandomArray(size, minimum_num, maximum_num);
+
+  separate();
 
   cout << "Randomly generated array: ";
   ArrayHelper::printArray(randomArray, size);
@@ -284,21 +289,25 @@ int main() {
   cout << "Sorted random array: ";
   ArrayHelper::printArray(randomArray, size);
 
+  separate();
+
   // Search in the array
   int target = randomArray[5]; // Picking a value from the array
   int searchResult = SearchAlgorithms::binarySearch(randomArray, size, target);
   if (searchResult != -1) {
-    cout << "Element " << target << " found at index " << searchResult << endl;
+    cout << "BinarySearch found " << target << " at index " << searchResult << endl;
   } else {
     cout << "Element " << target << " not found" << endl;
   }
 
   int searchResult2 = SearchAlgorithms::defectiveBinarySearch(randomArray, size, target);
   if (searchResult2 != -1) {
-    cout << "Element " << target << " found at index " << searchResult << endl;
+    cout << "defective BinarySearch found " << target << " at index " << searchResult << endl;
   } else {
     cout << "Element " << target << " not found" << endl;
   }
+
+  separate();
 
   // Demonstrate LinkedList
   LinkedList list;
@@ -314,6 +323,8 @@ int main() {
   list.removeKey(randomArray[2]);
   cout << "Updated linked list: ";
   list.print();
+
+  separate();
 
   // Cleanup
   delete[] randomArray;
