@@ -48,54 +48,105 @@ public:
   LinkedList() : head(nullptr) {}
 
   ~LinkedList() {
-    while (head != nullptr) {
+    while (head != nullptr) { //> You can comment out the things between the "{}" brackets but this approach is generally more safe
       Node* temp = head;
       head = head->next;
       delete temp;
     }
   }
 
-  // Insert at the end
-  void insert(int value) {
-    Node* newNode = new Node(value);
-    if (head == nullptr) {
+  // Insert at the beginning of the list
+  void insertAtStart(int value) {
+      Node* newNode = new Node(value);
+      newNode->next = head;
       head = newNode;
-    } else {
-      Node* current = head;
-      while (current->next != nullptr) {
-        current = current->next;
-      }
-      current->next = newNode;
-    }
   }
 
-  // Delete a node by value
+  // Insert at the end of the list (your existing insert function renamed)
+  void insertAtEnd(int value) {
+      Node* newNode = new Node(value);
+      if (head == nullptr) {
+          head = newNode;
+      } else {
+          Node* current = head;
+          while (current->next != nullptr) {
+              current = current->next;
+          }
+          current->next = newNode;
+      }
+  }
+
+  // Insert at a specific position (0-based index)
+  void insertAtPosition(int value, int position) {
+      if (position < 0) {
+          cout << "Invalid position. Position should be non-negative." << endl;
+          return;
+      }
+
+      if (position == 0) {
+          insertAtStart(value);
+          return;
+      }
+
+      Node* newNode = new Node(value);
+      Node* current = head;
+      int currentPos = 0;
+
+      // Move to the position just before where we want to insert
+      while (current != nullptr && currentPos < position - 1) {
+          current = current->next;
+          currentPos++;
+      }
+
+      // Check if position is out of bounds
+      if (current == nullptr) {
+          cout << "Position out of bounds. The list has only " << currentPos << " elements." << endl;
+          delete newNode;
+          return;
+      }
+
+      // Insert the new node
+      newNode->next = current->next;
+      current->next = newNode;
+  }
+
+  //Delete node by value
   void remove(int value) {
-    if (head == nullptr) {
-      cout << "List is empty." << endl;
-      return;
-    }
+      // Case 1: Empty list
+      if (head == nullptr) {
+          cout << "List is empty." << endl;
+          return;
+      }
 
-    if (head->data == value) {
-      Node* temp = head;
-      head = head->next;
-      delete temp;
-      return;
-    }
+      // Case 2: Value is in the head node
+      if (head->data == value) {
+          Node* toDelete = head;
+          head = head->next;      // Move head to next node
+          delete toDelete;        // Free the old head
+          return;
+      }
 
-    Node* current = head;
-    while (current->next != nullptr && current->next->data != value) {
-      current = current->next;
-    }
+      // Case 3: Value is in the rest of the list
+      Node* current = head;
+      
+      // Search for the node before the one we want to delete
+      // Stop when we either:
+      // - Find the value in the next node (current->next->data == value)
+      // - Reach the end of the list (current->next == nullptr)
+      while (current->next != nullptr && current->next->data != value) {
+          current = current->next;
+      }
 
-    if (current->next == nullptr) {
-      cout << "Value not found in the list." << endl;
-      return;
-    }
+      // Check if we reached the end without finding the value
+      if (current->next == nullptr) {
+          cout << "Value not found in the list." << endl;
+          return;
+      }
 
-    Node* temp = current->next;
-    current->next = current->next->next;
-    delete temp;
+      // Delete the node
+      Node* toDelete = current->next;           // Node to delete
+      current->next = current->next->next;      // Bridge the gap
+      delete toDelete;                          // Free the memory
   }
 
   // Print the list
@@ -184,7 +235,7 @@ int main() {
   LinkedList list;
   cout << "Adding elements to linked list..." << endl;
   for (int i = 0; i < size; i++) {
-    list.insert(randomArray[i]);
+    list.insertAtEnd(randomArray[i]);
   }
   cout << "Linked list contents: ";
   list.print();
