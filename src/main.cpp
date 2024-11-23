@@ -227,6 +227,23 @@ public:
 
     return -1; // Target not found
   }
+
+  static int defectiveBinarySearch(int arr[], int size, int target) {
+    int left = 0, right = size - 1;
+
+    while (left < right) { // Note: This should be <=, but is defective
+        int mid = left + (right - left) / 2;
+        if (arr[mid] == target)
+            return mid; // Target found
+        else if (arr[mid] < target)
+            left = mid + 1; // Search the right half
+        else
+            right = mid; // Flawed: right is not reduced correctly
+    }
+
+    return (arr[left] == target) ? left : -1; // Fails for certain cases
+  }
+
 };
 
 // Sorting algorithms (unchanged from your code)
@@ -254,14 +271,16 @@ int main() {
   srand(static_cast<unsigned int>(time(0))); // Seed for random numbers
 
   // Generate a random array
-  int size = 10;
+  int size = 20;
   int minimum_num = 1, maximum_num = 100;
   int* randomArray = ArrayHelper::generateRandomArray(size, minimum_num, maximum_num);
+
   cout << "Randomly generated array: ";
   ArrayHelper::printArray(randomArray, size);
 
   // Sort the array
   SortingAlgorithms::bubbleSort(randomArray, size);
+
   cout << "Sorted random array: ";
   ArrayHelper::printArray(randomArray, size);
 
@@ -269,6 +288,13 @@ int main() {
   int target = randomArray[5]; // Picking a value from the array
   int searchResult = SearchAlgorithms::binarySearch(randomArray, size, target);
   if (searchResult != -1) {
+    cout << "Element " << target << " found at index " << searchResult << endl;
+  } else {
+    cout << "Element " << target << " not found" << endl;
+  }
+
+  int searchResult2 = SearchAlgorithms::defectiveBinarySearch(randomArray, size, target);
+  if (searchResult2 != -1) {
     cout << "Element " << target << " found at index " << searchResult << endl;
   } else {
     cout << "Element " << target << " not found" << endl;
