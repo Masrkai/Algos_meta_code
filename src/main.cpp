@@ -110,42 +110,85 @@ public:
       current->next = newNode;
   }
 
-  //Delete node by value
-  void remove(int value) {
+  // Remove the first node in the list
+  void removeFirst() {
+      // Check if list is empty
+      if (head == nullptr) {
+          cout << "List is empty. Nothing to remove." << endl;
+          return;
+      }
+
+      // Store the head node and move head to next node
+      Node* toDelete = head;
+      head = head->next;
+
+      // Free the memory of old head
+      delete toDelete;
+  }
+
+  // Remove the last node in the list
+  void removeLast() {
       // Case 1: Empty list
       if (head == nullptr) {
-          cout << "List is empty." << endl;
+          cout << "List is empty. Nothing to remove." << endl;
           return;
       }
 
-      // Case 2: Value is in the head node
-      if (head->data == value) {
-          Node* toDelete = head;
-          head = head->next;      // Move head to next node
-          delete toDelete;        // Free the old head
+      // Case 2: Only one node in the list
+      if (head->next == nullptr) {
+          delete head;
+          head = nullptr;
           return;
       }
 
-      // Case 3: Value is in the rest of the list
+      // Case 3: More than one node
+      // We need to find the second-to-last node
       Node* current = head;
-      
-      // Search for the node before the one we want to delete
-      // Stop when we either:
-      // - Find the value in the next node (current->next->data == value)
-      // - Reach the end of the list (current->next == nullptr)
-      while (current->next != nullptr && current->next->data != value) {
+      while (current->next->next != nullptr) {
           current = current->next;
       }
 
-      // Check if we reached the end without finding the value
-      if (current->next == nullptr) {
-          cout << "Value not found in the list." << endl;
+      // Now current points to second-to-last node
+      delete current->next;       // Delete the last node
+      current->next = nullptr;    // Set the new last node's next to nullptr
+  }
+
+  // Remove node with specific key/value
+  void removeKey(int key) {
+      // Case 1: Empty list
+      if (head == nullptr) {
+          cout << "List is empty. Nothing to remove." << endl;
           return;
       }
 
-      // Delete the node
-      Node* toDelete = current->next;           // Node to delete
-      current->next = current->next->next;      // Bridge the gap
+      // Case 2: Key is in head node
+      if (head->data == key) {
+          Node* toDelete = head;
+          head = head->next;
+          delete toDelete;
+          return;
+      }
+
+      // Case 3: Key is in rest of the list
+      Node* current = head;
+      
+      // Search for node containing the key
+      // Stop when either:
+      // - We find the key in the next node
+      // - We reach the end of the list
+      while (current->next != nullptr && current->next->data != key) {
+          current = current->next;
+      }
+
+      // If we reached the end without finding the key
+      if (current->next == nullptr) {
+          cout << "Key " << key << " not found in the list." << endl;
+          return;
+      }
+
+      // Remove the node containing the key
+      Node* toDelete = current->next;           // Store node to delete
+      current->next = current->next->next;      // Skip over the node
       delete toDelete;                          // Free the memory
   }
 
@@ -242,7 +285,7 @@ int main() {
 
   // Remove an element
   cout << "Removing " << randomArray[2] << " from linked list." << endl;
-  list.remove(randomArray[2]);
+  list.removeKey(randomArray[2]);
   cout << "Updated linked list: ";
   list.print();
 
