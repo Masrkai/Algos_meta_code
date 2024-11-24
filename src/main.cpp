@@ -307,7 +307,7 @@ public:
   }
 };
 
-// Sorting algorithms (unchanged from your code)
+// Sorting algorithms
 class SortingAlgorithms {
 public:
     static void bubbleSort(int arr[], int size) {
