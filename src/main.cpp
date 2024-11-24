@@ -18,118 +18,145 @@ public:
     cout << endl;
   }
   //--------------------------------------------------------->
-
   // Generate a random array with given size and range
   static int* generateRandomArray(int size, int minimum_num, int maximum_num) {
-    if (size <= 0 || minimum_num > maximum_num) {
-      cerr << "Invalid parameters for random array generation!" << endl;
-      return nullptr;
-    }
-    int* arr = new int[size];
-    for (int i = 0; i < size; i++) {
-      arr[i] = minimum_num + rand() % (maximum_num - minimum_num + 1);
-    }
-    return arr;
+      // Check for invalid input parameters
+      if (size <= 0 || minimum_num > maximum_num) {
+          cerr << "Invalid parameters for random array generation!" << endl;
+          return nullptr; // Return null pointer to indicate error
+      }
+
+      // Allocate memory for the array
+      int* arr = new int[size];
+
+      // Generate random numbers within the specified range and store them in the array
+      for (int i = 0; i < size; i++) {
+          // Generate a random integer between 0 and (maximum_num - minimum_num) inclusive
+          int random_num = rand() % (maximum_num - minimum_num + 1);
+          // Add the minimum number to the random number to get a number within the desired range
+          arr[i] = minimum_num + random_num;
+      }
+
+      return arr; // Return the pointer to the generated array
   }
   //--------------------------------------------------------->
 };
 
-// Linked List implementation
 class LinkedList {
-private:
-  struct Node {
-    int data;
-    Node* next;
-    Node(int value) : data(value), next(nullptr) {}
-  };
+    private:
+      // Node structure for the linked list
+      struct Node {
+        int data; // Data stored in the node
+        Node* next; // Pointer to the next node in the list
 
-  Node* head;
+        // Constructor to initialize a node with a given value
+        Node(int value) : data(value), next(nullptr) {}
+      };
 
-public:
-  LinkedList() : head(nullptr) {}
+      Node* head; // Pointer to the head of the linked list
 
-  ~LinkedList() {
-    while (head != nullptr) { //> You can comment out the things between the "{}" brackets but this approach is generally more safe
-      Node* temp = head;
-      head = head->next;
-      delete temp;
-    }
-  }
+    public:
+      // Default constructor to initialize an empty linked list
+      LinkedList() : head(nullptr) {}
 
-  // Insert at the beginning of the list
+      // Destructor to deallocate memory and prevent memory leaks
+      ~LinkedList() {
+        while (head != nullptr) { // Iterate through the list and delete each node
+          Node* temp = head; // Store the current head node
+          head = head->next; // Move the head pointer to the next node
+          delete temp; // Delete the current head node
+        }
+      }
+
+  // Insert a new node at the beginning of the linked list
   void insertAtStart(int value) {
+      // Create a new node with the given value
       Node* newNode = new Node(value);
+      // Set the next pointer of the new node to the current head
       newNode->next = head;
+      // Update the head pointer to point to the new node
       head = newNode;
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
-  // Insert at the end of the list (your existing insert function renamed)
+  // Insert a new node at the end of the linked list
   void insertAtEnd(int value) {
+      // Create a new node with the given value
       Node* newNode = new Node(value);
+
+      // If the list is empty, set the new node as the head
       if (head == nullptr) {
           head = newNode;
       } else {
+          // Traverse the list to find the last node
           Node* current = head;
           while (current->next != nullptr) {
               current = current->next;
           }
+          // Set the next pointer of the last node to the new node
           current->next = newNode;
       }
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
   // Insert at a specific position (0-based index)
   void insertAtPosition(int value, int position) {
+      // Check if the position is valid (non-negative)
       if (position < 0) {
           cout << "Invalid position. Position should be non-negative." << endl;
           return;
       }
 
+      // Handle special case: inserting at the beginning
       if (position == 0) {
           insertAtStart(value);
           return;
       }
 
+      // Create a new node to be inserted
       Node* newNode = new Node(value);
+
+      // Initialize a pointer to traverse the list
       Node* current = head;
       int currentPos = 0;
 
-      // Move to the position just before where we want to insert
+      // Iterate through the list until we reach the position just before the insertion point
       while (current != nullptr && currentPos < position - 1) {
           current = current->next;
           currentPos++;
       }
 
-      // Check if position is out of bounds
+      // Check if the specified position is within the list's bounds
       if (current == nullptr) {
           cout << "Position out of bounds. The list has only " << currentPos << " elements." << endl;
-          delete newNode;
+          delete newNode; // Clean up the unused node
           return;
       }
 
-      // Insert the new node
-      newNode->next = current->next;
-      current->next = newNode;
+      // Insert the new node at the desired position
+      newNode->next = current->next; // Link the new node to the next node
+      current->next = newNode; // Link the current node to the new node
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
   // Remove the first node in the list
   void removeFirst() {
-      // Check if list is empty
+      // Check if the list is empty
       if (head == nullptr) {
           cout << "List is empty. Nothing to remove." << endl;
           return;
       }
 
-      // Store the head node and move head to next node
+      // Store a reference to the node to be deleted
       Node* toDelete = head;
+
+      // Update the head pointer to point to the next node
       head = head->next;
 
-      // Free the memory of old head
+      // Deallocate the memory of the deleted node
       delete toDelete;
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
   // Remove the last node in the list
   void removeLast() {
@@ -157,7 +184,7 @@ public:
       delete current->next;       // Delete the last node
       current->next = nullptr;    // Set the new last node's next to nullptr
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
   // Remove node with specific key/value
   void removeKey(int key) {
@@ -197,18 +224,23 @@ public:
       current->next = current->next->next;      // Skip over the node
       delete toDelete;                          // Free the memory
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 
   // Print the list
   void print() const {
-    Node* current = head;
-    while (current != nullptr) {
-      cout << current->data << " ";
-      current = current->next;
-    }
-    cout << endl;
+      // Initialize a pointer to traverse the list
+      Node* current = head;
+
+      // Iterate through the list, printing the data of each node
+      while (current != nullptr) {
+          cout << current->data << " ";
+          current = current->next;
+      }
+
+      // Print a newline character to separate the list from other output
+      cout << endl;
   }
-  //--------------------------------------------------------->
+//--------------------------------------------------------------------------------------->
 };
 
 // Search algorithms
@@ -251,6 +283,28 @@ public:
       return  -1;                                  // DEFECT 3: Final check is unreliable due to previous defects
   }
   //--------------------------------------------------------->
+
+    // Linear Search: Iterative
+  static int linearSearch(int arr[], int size, int target) {
+      for (int i = 0; i < size; i++) {
+          if (arr[i] == target) {
+              return i;  // Return the index of the target
+          }
+      }
+      return -1;  // Return -1 if target not found
+  }
+  //--------------------------------------------------------->
+
+  // Linear Search: Recursive
+  static int recursiveLinearSearch(int arr[], int size, int target, int index = 0) {
+      if (index >= size) {
+          return -1;  // Base case: target not found
+      }
+      if (arr[index] == target) {
+          return index;  // Base case: target found
+      }
+      return recursiveLinearSearch(arr, size, target, index + 1);  // Recursive case
+  }
 };
 
 // Sorting algorithms (unchanged from your code)
