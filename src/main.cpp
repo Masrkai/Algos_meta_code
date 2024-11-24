@@ -9,6 +9,7 @@ public:
     arr[pos1] = arr[pos2];
     arr[pos2] = temp;
   }
+  //--------------------------------------------------------->
 
   static void printArray(int arr[], int size) {
     for (int i = 0; i < size; i++) {
@@ -16,6 +17,7 @@ public:
     }
     cout << endl;
   }
+  //--------------------------------------------------------->
 
   // Generate a random array with given size and range
   static int* generateRandomArray(int size, int minimum_num, int maximum_num) {
@@ -29,6 +31,7 @@ public:
     }
     return arr;
   }
+  //--------------------------------------------------------->
 };
 
 // Linked List implementation
@@ -59,6 +62,7 @@ public:
       newNode->next = head;
       head = newNode;
   }
+  //--------------------------------------------------------->
 
   // Insert at the end of the list (your existing insert function renamed)
   void insertAtEnd(int value) {
@@ -73,6 +77,7 @@ public:
           current->next = newNode;
       }
   }
+  //--------------------------------------------------------->
 
   // Insert at a specific position (0-based index)
   void insertAtPosition(int value, int position) {
@@ -107,6 +112,7 @@ public:
       newNode->next = current->next;
       current->next = newNode;
   }
+  //--------------------------------------------------------->
 
   // Remove the first node in the list
   void removeFirst() {
@@ -123,6 +129,7 @@ public:
       // Free the memory of old head
       delete toDelete;
   }
+  //--------------------------------------------------------->
 
   // Remove the last node in the list
   void removeLast() {
@@ -150,6 +157,7 @@ public:
       delete current->next;       // Delete the last node
       current->next = nullptr;    // Set the new last node's next to nullptr
   }
+  //--------------------------------------------------------->
 
   // Remove node with specific key/value
   void removeKey(int key) {
@@ -169,7 +177,7 @@ public:
 
       // Case 3: Key is in rest of the list
       Node* current = head;
-      
+
       // Search for node containing the key
       // Stop when either:
       // - We find the key in the next node
@@ -189,6 +197,7 @@ public:
       current->next = current->next->next;      // Skip over the node
       delete toDelete;                          // Free the memory
   }
+  //--------------------------------------------------------->
 
   // Print the list
   void print() const {
@@ -199,6 +208,7 @@ public:
     }
     cout << endl;
   }
+  //--------------------------------------------------------->
 };
 
 // Search algorithms
@@ -220,6 +230,7 @@ public:
       }
       return -1;  // KEY DIFFERENCE 4: Always returns -1 if target not found
   }
+  //--------------------------------------------------------->
 
   // Defective Binary Search Implementation (with fixes commented)
   static int defectiveBinarySearch(int arr[], int size, int target) {
@@ -239,27 +250,145 @@ public:
       }
       return  -1;                                  // DEFECT 3: Final check is unreliable due to previous defects
   }
+  //--------------------------------------------------------->
 };
 
 // Sorting algorithms (unchanged from your code)
 class SortingAlgorithms {
 public:
-  static void bubbleSort(int arr[], int size) {
-    bool swapped;
-    for (int i = 0; i < size - 1; i++) {
-      swapped = false;
-      for (int j = 0; j < size - i - 1; j++) {
-        if (arr[j] > arr[j + 1]) {
-          ArrayHelper::swap(arr, j, j + 1);
-          swapped = true;
+    static void bubbleSort(int arr[], int size) {
+        bool swapped;
+        for (int i = 0; i < size - 1; i++) {
+            swapped = false;
+            for (int j = 0; j < size - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    ArrayHelper::swap(arr, j, j + 1);
+                    swapped = true;
+                }
+            }
+            if (!swapped) {
+                break;
+            }
         }
-      }
-      if (!swapped) {
-        break;
-      }
     }
-  }
+//--------------------------------------------------------->
+
+    static void selectionSort(int arr[], int size) {
+        for (int i = 0; i < size - 1; i++) {
+            int min_idx = i;
+            for (int j = i + 1; j < size; j++) {
+                if (arr[j] < arr[min_idx]) {
+                    min_idx = j;
+                }
+            }
+            if (min_idx != i) {
+                ArrayHelper::swap(arr, i, min_idx);
+            }
+        }
+    }
+//--------------------------------------------------------->
+
+    static void insertionSort(int arr[], int size) {
+        for (int i = 1; i < size; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
+        }
+    }
+//--------------------------------------------------------->
+
+    static void merge(int arr[], int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+
+        // Create temporary arrays
+        int* L = new int[n1];
+        int* R = new int[n2];
+
+        // Copy data to temporary arrays
+        for (int i = 0; i < n1; i++)
+            L[i] = arr[left + i];
+        for (int j = 0; j < n2; j++)
+            R[j] = arr[mid + 1 + j];
+
+        // Merge the temporary arrays back into arr
+        int i = 0, j = 0, k = left;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            } else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        // Copy remaining elements of L[]
+        while (i < n1) {
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+
+        // Copy remaining elements of R[]
+        while (j < n2) {
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+
+        // Free temporary arrays
+        delete[] L;
+        delete[] R;
+    }
+
+    static void mergeSortHelper(int arr[], int left, int right) {
+        if (left < right) {
+            int mid = left + (right - left) / 2;
+            mergeSortHelper(arr, left, mid);
+            mergeSortHelper(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+
+    static void mergeSort(int arr[], int size) {
+        mergeSortHelper(arr, 0, size - 1);
+    }
+//--------------------------------------------------------->
+
+    static int partition(int arr[], int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                ArrayHelper::swap(arr, i, j);
+            }
+        }
+        ArrayHelper::swap(arr, i + 1, high);
+        return i + 1;
+    }
+
+    static void quickSortHelper(int arr[], int low, int high) {
+        if (low < high) {
+            int pi = partition(arr, low, high);
+            quickSortHelper(arr, low, pi - 1);
+            quickSortHelper(arr, pi + 1, high);
+        }
+    }
+
+    static void quickSort(int arr[], int size) {
+        quickSortHelper(arr, 0, size - 1);
+    }
+  //--------------------------------------------------------->
 };
+
 
 static int separate(){
 cout << "-------------------------------------------------------------------------- "<< endl ;
