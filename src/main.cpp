@@ -275,7 +275,7 @@ public:
           if (arr[mid] == target) {
               return mid;
           }else if (arr[mid] < target) {
-              left = mid + 1;
+              left = mid;
           }else {
               right = mid;                            // DEFECT 2: Doesn't decrease right boundary properly
           }                                          // Should be: right = mid - 1
