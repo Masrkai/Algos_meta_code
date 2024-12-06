@@ -444,10 +444,10 @@ public:
 };
 
 
-static int separate(){
-cout << "-------------------------------------------------------------------------- "<< endl ;
-return 0;
-};
+    static int separate(){
+    cout << "-------------------------------------------------------------------------- "<< endl ;
+    return 0;
+    };
 
 // Main function to demonstrate functionality
 int main() {
