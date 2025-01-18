@@ -260,7 +260,7 @@ class LinkedList {
         tail = nullptr;
     }
 
-        // Reverse the linked list
+    // Reverse the linked list
     void reverse() {
         Node* prev = nullptr;
         Node* current = head;
@@ -273,6 +273,52 @@ class LinkedList {
         }
         head = prev;
     }
+
+    // Detect if the list is circular
+    bool isCircular() const {
+        if (isEmpty()) return false;
+        Node* slow = head;
+        Node* fast = head;
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Compare two linked lists
+    bool compare(const LinkedList& other) const {
+        Node* current1 = head;
+        Node* current2 = other.head;
+        while (current1 != nullptr && current2 != nullptr) {
+            if (current1->data != current2->data) {
+                return false;
+            }
+            current1 = current1->next;
+            current2 = current2->next;
+        }
+        return (current1 == nullptr && current2 == nullptr);
+    }
+
+    // Remove duplicates from a sorted list
+    void removeDuplicates() {
+        if (isEmpty()) return;
+        Node* current = head;
+        while (current->next != nullptr) {
+            if (current->data == current->next->data) {
+                Node* temp = current->next;
+                current->next = temp->next;
+                delete temp;
+            } else {
+                current = current->next;
+            }
+        }
+    }
+
+
 //--------------------------------------------------------------------------------------->
 };
 
