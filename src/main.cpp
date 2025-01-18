@@ -1,4 +1,8 @@
+
 #include <iostream>
+#include <chrono>
+
+
 using namespace std;
 
 // Helper functions for array operations
@@ -68,75 +72,75 @@ class LinkedList {
         }
       }
 
-  // Insert a new node at the beginning of the linked list
-  void insertAtStart(int value) {
-      // Create a new node with the given value
-      Node* newNode = new Node(value);
-      // Set the next pointer of the new node to the current head
-      newNode->next = head;
-      // Update the head pointer to point to the new node
-      head = newNode;
-  }
+        // Insert a new node at the beginning of the linked list
+        void insertAtStart(int value) {
+            // Create a new node with the given value
+            Node* newNode = new Node(value);
+            // Set the next pointer of the new node to the current head
+            newNode->next = head;
+            // Update the head pointer to point to the new node
+            head = newNode;
+        }
 //--------------------------------------------------------------------------------------->
 
-  // Insert a new node at the end of the linked list
-  void insertAtEnd(int value) {
-      // Create a new node with the given value
-      Node* newNode = new Node(value);
+        // Insert a new node at the end of the linked list
+        void insertAtEnd(int value) {
+            // Create a new node with the given value
+            Node* newNode = new Node(value);
 
-      // If the list is empty, set the new node as the head
-      if (head == nullptr) {
-          head = newNode;
-      } else {
-          // Traverse the list to find the last node
-          Node* current = head;
-          while (current->next != nullptr) {
-              current = current->next;
-          }
-          // Set the next pointer of the last node to the new node
-          current->next = newNode;
-      }
-  }
+            // If the list is empty, set the new node as the head
+            if (head == nullptr) {
+                head = newNode;
+            } else {
+                // Traverse the list to find the last node
+                Node* current = head;
+                while (current->next != nullptr) {
+                    current = current->next;
+                }
+                // Set the next pointer of the last node to the new node
+                current->next = newNode;
+            }
+        }
 //--------------------------------------------------------------------------------------->
 
-  // Insert at a specific position (0-based index)
-  void insertAtPosition(int value, int position) {
-      // Check if the position is valid (non-negative)
-      if (position < 0) {
-          cout << "Invalid position. Position should be non-negative." << endl;
-          return;
-      }
+    // Insert at a specific position (0-based index)
+    void insertAtPosition(int value, int position) {
+        // Check if the position is valid (non-negative)
+        if (position < 0) {
+            cout << "Invalid position. Position should be non-negative." << endl;
+            return;
+        }
 
-      // Handle special case: inserting at the beginning
-      if (position == 0) {
-          insertAtStart(value);
-          return;
-      }
+        // Handle special case: inserting at the beginning
+        if (position == 0) {
+            insertAtStart(value);
+            return;
+        }
 
-      // Create a new node to be inserted
-      Node* newNode = new Node(value);
+        // Create a new node to be inserted
+        Node* newNode = new Node(value);
 
-      // Initialize a pointer to traverse the list
-      Node* current = head;
-      int currentPos = 0;
+        // Initialize a pointer to traverse the list
+        Node* current = head;
+        int currentPos = 0;
 
-      // Iterate through the list until we reach the position just before the insertion point
-      while (current != nullptr && currentPos < position - 1) {
-          current = current->next;
-          currentPos++;
-      }
+        // Iterate through the list until we reach the position just before the insertion point
+        while (current != nullptr && currentPos < position - 1) {
+            current = current->next;
+            currentPos++;
+        }
 
-      // Check if the specified position is within the list's bounds
-      if (current == nullptr) {
-          cout << "Position out of bounds. The list has only " << currentPos << " elements." << endl;
-          delete newNode; // Clean up the unused node
-          return;
-      }
+        // Check if the specified position is within the list's bounds
+        if (current == nullptr) {
+            cout << "Position out of bounds. The list has only " << currentPos << " elements." << endl;
+            delete newNode; // Clean up the unused node
+            return;
+        }
 
-      // Insert the new node at the desired position
-      newNode->next = current->next; // Link the new node to the next node
-      current->next = newNode; // Link the current node to the new node
-  }
+        // Insert the new node at the desired position
+        newNode->next = current->next; // Link the new node to the next node
+        current->next = newNode; // Link the current node to the new node
+    }
 //--------------------------------------------------------------------------------------->
 
   // Remove the first node in the list
@@ -269,19 +273,21 @@ public:
       int left = 0, right = size - 1;
 
       // DEFECT 1: Uses < instead of <=, which can miss checking the last element
-      while (left < right) {  // Should be: while (left <= right)
+      while (left < right ) {  // Should be: while (left <= right)
           // More robust mid calculation to prevent integer overflow
           int mid = left + (right - left) / 2;
           if (arr[mid] == target) {
               return mid;
-          }else if (arr[mid] < target) {
-              left = mid;
+          }else if (arr[mid] < target){
+                left = mid;
           }else {
               right = mid;                            // DEFECT 2: Doesn't decrease right boundary properly
           }                                          // Should be: right = mid - 1
       }
-      return  -1;                                  // DEFECT 3: Final check is unreliable due to previous defects
+
+    cout << "Not Found" << endl;
   }
+
   //--------------------------------------------------------->
 
     // Linear Search: Iterative
@@ -472,7 +478,7 @@ int main() {
   separate();
 
   // Search in the array
-  int target = randomArray[5]; // Picking a value from the array
+  int target = randomArray[19]; // Picking a value from the array
   int searchResult = SearchAlgorithms::binarySearch(randomArray, size, target);
   if (searchResult != -1) {
     cout << "BinarySearch found " << target << " at index " << searchResult << endl;
@@ -480,9 +486,16 @@ int main() {
     cout << "Element " << target << " not found" << endl;
   }
 
-  int searchResult2 = SearchAlgorithms::defectiveBinarySearch(randomArray, size, target);
+  int searchResult2 = SearchAlgorithms::linearSearch(randomArray, size, target);
   if (searchResult2 != -1) {
-    cout << "defective BinarySearch found " << target << " at index " << searchResult << endl;
+    cout << "linearSearch found " << target << " at index " << searchResult << endl;
+  } else {
+    cout << "Element " << target << " not found" << endl;
+  }
+
+  int searchResult3 = SearchAlgorithms::recursiveLinearSearch(randomArray, size, target);
+  if (searchResult3 != -1) {
+    cout << "Recursive linearSearch found " << target << " at index " << searchResult << endl;
   } else {
     cout << "Element " << target << " not found" << endl;
   }
