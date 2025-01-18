@@ -259,6 +259,20 @@ class LinkedList {
         }
         tail = nullptr;
     }
+
+        // Reverse the linked list
+    void reverse() {
+        Node* prev = nullptr;
+        Node* current = head;
+        Node* nextNode = nullptr;
+        while (current != nullptr) {
+            nextNode = current->next;
+            current->next = prev;
+            prev = current;
+            current = nextNode;
+        }
+        head = prev;
+    }
 //--------------------------------------------------------------------------------------->
 };
 
