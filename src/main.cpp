@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <vector>
 #include <cassert>
 
 
@@ -46,8 +47,55 @@ public:
   //--------------------------------------------------------->
 };
 
+const int maxQueue = 100; // Define the maximum size of the queue
 
+template <class queueElementType>
+class Queue {
+private:
+    queueElementType queueArray[maxQueue]; // Array to store queue elements
+    int front; // Index of the front element
+    int rear;  // Index of the rear element
 
+    // Helper function to compute the next position in a circular manner
+    int nextPos(int p) {
+        return (p == maxQueue - 1) ? 0 : p + 1;
+    }
+
+public:
+    // Constructor
+    Queue() : front(0), rear(0) {}
+
+    // Check if the queue is empty
+    bool isEmpty() {
+        return front == rear;
+    }
+
+    // Check if the queue is full
+    bool isFull() {
+        return nextPos(rear) == front;
+    }
+
+    // Add an element to the rear of the queue
+    void enqueue(queueElementType e) {
+        assert(!isFull()); // Ensure the queue is not full
+        queueArray[rear] = e; // Insert element at the rear
+        rear = nextPos(rear); // Move rear to the next position
+    }
+
+    // Remove and return the element from the front of the queue
+    queueElementType dequeue() {
+        assert(!isEmpty()); // Ensure the queue is not empty
+        queueElementType result = queueArray[front]; // Get the front element
+        front = nextPos(front); // Move front to the next position
+        return result;
+    }
+
+    // Return the front element without removing it
+    queueElementType getFront() {
+        assert(!isEmpty()); // Ensure the queue is not empty
+        return queueArray[front]; // Return the front element
+        }
+};
 
 
 
@@ -55,11 +103,11 @@ class HashTable {
 
 public:
 
-    // Define a structure to hold employee data
-    struct EmployeeData {
-        string lastName;    // Employee's last name
-        string firstName;   // Employee's first name
-        string hireDate;    // Employee's hire date in MM-DD-YYYY format
+    // Define a structure to hold Person data
+    struct PersonData {
+        string lastName;    // Person's last name
+        string firstName;   // Person's first name
+        string hireDate;    // Person's hire date in MM-DD-YYYY format
     };
 
     // Enum to represent the status of each slot in the hash table
@@ -68,8 +116,8 @@ public:
     // Structure to represent a slot in the hash table
     struct Slot {
         SlotType status;    // Status of the slot (Empty, Deleted, InUse)
-        int key;            // Key stored in the slot (Employee ID)
-        EmployeeData data;  // Data associated with the key
+        int key;            // Key stored in the slot (Person ID)
+        PersonData data;  // Data associated with the key
     };
 
     static const int maxTable = 11; // Size of the hash table (prime number to reduce collisions)
@@ -129,7 +177,7 @@ public:
     }
 
     // Method to insert a new key and data into the hash table
-    void insert(int insertKey, const EmployeeData& insertData) {
+    void insert(int insertKey, const PersonData& insertData) {
         assert(entries < maxTable - 1); // Ensure the table is not full
         int pos = hash(insertKey); // Calculate the home address for the key
 
@@ -150,7 +198,7 @@ public:
     }
 
     // Method to lookup data associated with a key in the hash table
-    bool lookup(int lookupKey, EmployeeData& lookupData) {
+    bool lookup(int lookupKey, PersonData& lookupData) {
         int pos = hash(lookupKey); // Calculate the home address for the key
         if (search(lookupKey, pos)) { // If the key is found
             lookupData = hashTableArray[pos].data; // Retrieve the data
@@ -684,14 +732,34 @@ public:
 
 // Main function to demonstrate functionality
 int main() {
+
+    Queue<int> q; // Create a queue of integers
+
+    // Enqueue some elements
+    q.enqueue(10);
+    q.enqueue(20);
+    q.enqueue(30);
+    q.enqueue(40);
+
+    // Display the front element
+    cout << "Front element: " << q.getFront() << endl;
+
+    // Dequeue elements and print them
+    cout << "Dequeuing elements:" << endl;
+    while (!q.isEmpty()) {
+        cout << q.dequeue() << endl;
+    }
+
+    separate();
+
+//-------------------------------------------------------------------------------------------------->
+
   srand(static_cast<unsigned int>(time(0))); // Seed for random numbers
 
   // Generate a random array
   int size = 20;
   int minimum_num = 1, maximum_num = 100;
   int* randomArray = ArrayHelper::generateRandomArray(size, minimum_num, maximum_num);
-
-  separate();
 
   cout << "Randomly generated array: ";
   ArrayHelper::printArray(randomArray, size);
@@ -752,10 +820,10 @@ int main() {
 //-------------------------------------------------------------------------------------------------->
 
 
- HashTable employeeTable; // Create a hash table for employee records
+ HashTable PersonTable; // Create a hash table for Person records
 
-    // Predefined employee data
-    vector<tuple<int, string, string, string>> employees = {
+    // Predefined Person data
+    vector<tuple<int, string, string, string>> Persons = {
         {101, "John", "Doe", "01-01-2020"},
         {102, "Jane", "Smith", "02-15-2019"},
         {103, "Alice", "Johnson", "03-10-2021"},
@@ -763,61 +831,65 @@ int main() {
         {105, "Charlie", "Davis", "05-20-2022"}
     };
 
-    cout << "*******************************" << endl;
-    cout << "Welcome to the Employee Record Management System!" << endl;
-    cout << "*******************************" << endl << endl;
 
-    // Automatically insert employee records into the hash table
-    cout << "Inserting employee records..." << endl;
-    for (const auto& emp : employees) {
+    // Automatically insert Person records into the hash table
+    cout << "Inserting records..." << endl;
+    for (const auto& emp : Persons) {
         int empId = get<0>(emp);
         string firstName = get<2>(emp);
         string lastName = get<1>(emp);
         string hireDate = get<3>(emp);
 
-        employeeTable.insert(empId, { lastName, firstName, hireDate });
-        cout << "Employee record added: ID " << empId << " - " << firstName << " " << lastName << endl;
+        PersonTable.insert(empId, { lastName, firstName, hireDate });
+        cout << "Person record added: ID " << empId << " - " << firstName << " " << lastName << endl;
     }
     cout << endl;
+
+   separate();
+
 
     // Display the size and number of entries in the hash table
-    cout << "Table size: " << employeeTable.getSize() << ", Number of current entries: " << employeeTable.getLength() << endl << endl;
+    cout << "Table size: " << PersonTable.getSize() << ", Number of current entries: " << PersonTable.getLength() << endl << endl;
 
-    // Automatically lookup an employee by ID
-    int lookupId = 103; // Lookup employee with ID 103
-    cout << "Looking up employee with ID " << lookupId << "..." << endl;
-    HashTable::EmployeeData lookupData;
-    if (employeeTable.lookup(lookupId, lookupData)) {
-        cout << "Employee found!" << endl;
+    // Automatically lookup an Person by ID
+    int lookupId = 103; // Lookup Person with ID 103
+    cout << "Looking up Person with ID " << lookupId << "..." << endl;
+    HashTable::PersonData lookupData;
+    if (PersonTable.lookup(lookupId, lookupData)) {
+        cout << "Person found!" << endl;
         cout << "First Name: " << lookupData.firstName << endl;
         cout << "Last Name: " << lookupData.lastName << endl;
         cout << "Hire Date: " << lookupData.hireDate << endl;
     } else {
-        cout << "Employee with ID " << lookupId << " not found!" << endl;
+        cout << "Person with ID " << lookupId << " not found!" << endl;
     }
     cout << endl;
 
-    // Automatically delete an employee record by ID
-    int deleteId = 102; // Delete employee with ID 102
-    cout << "Deleting employee with ID " << deleteId << "..." << endl;
-    employeeTable.deleteKey(deleteId);
-    cout << "Employee with ID " << deleteId << " deleted." << endl << endl;
+  separate();
+
+    // Automatically delete an Person record by ID
+    int deleteId = 102; // Delete Person with ID 102
+    cout << "Deleting using ID " << deleteId << "..." << endl;
+    PersonTable.deleteKey(deleteId);
+    cout << "Person with ID " << deleteId << " deleted." << endl << endl;
+
+  separate();
 
     // Lookup again to confirm deletion
-    cout << "Looking up employee with ID " << deleteId << " to confirm deletion..." << endl;
-    if (employeeTable.lookup(deleteId, lookupData)) {
-        cout << "Employee found!" << endl;
+    cout << "Looking up using ID " << deleteId << " to confirm deletion..." << endl;
+    if (PersonTable.lookup(deleteId, lookupData)) {
+        cout << "Person found!" << endl;
         cout << "First Name: " << lookupData.firstName << endl;
         cout << "Last Name: " << lookupData.lastName << endl;
         cout << "Hire Date: " << lookupData.hireDate << endl;
     } else {
-        cout << "Employee with ID " << deleteId << " not found!" << endl;
+        cout << "Person with ID " << deleteId << " not found!" << endl;
     }
     cout << endl;
 
     // Dump the contents of the hash table
     cout << "Hash Table Contents: " << endl;
-    employeeTable.dump();
+    PersonTable.dump();
 
   return 0;
 }
