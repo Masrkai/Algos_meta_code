@@ -230,20 +230,35 @@ class LinkedList {
   }
 //--------------------------------------------------------------------------------------->
 
-  // Print the list
-  void print() const {
-      // Initialize a pointer to traverse the list
-      Node* current = head;
+    // Print the list
+    void print() const {
+        // Initialize a pointer to traverse the list
+        Node* current = head;
 
-      // Iterate through the list, printing the data of each node
-      while (current != nullptr) {
-          cout << current->data << " ";
-          current = current->next;
-      }
+        // Iterate through the list, printing the data of each node
+        while (current != nullptr) {
+            cout << current->data << " ";
+            current = current->next;
+        }
 
-      // Print a newline character to separate the list from other output
-      cout << endl;
-  }
+        // Print a newline character to separate the list from other output
+        cout << endl;
+    }
+
+    // Check if the list is empty
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    // Make the list empty
+    void makeEmpty() {
+        while (head != nullptr) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+        }
+        tail = nullptr;
+    }
 //--------------------------------------------------------------------------------------->
 };
 
