@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include <chrono>
+#include <cassert>
 
 
 using namespace std;
@@ -46,6 +46,152 @@ public:
   //--------------------------------------------------------->
 };
 
+
+
+
+
+
+class HashTable {
+
+public:
+
+    // Define a structure to hold employee data
+    struct EmployeeData {
+        string lastName;    // Employee's last name
+        string firstName;   // Employee's first name
+        string hireDate;    // Employee's hire date in MM-DD-YYYY format
+    };
+
+    // Enum to represent the status of each slot in the hash table
+    enum SlotType { Empty, Deleted, InUse };
+
+    // Structure to represent a slot in the hash table
+    struct Slot {
+        SlotType status;    // Status of the slot (Empty, Deleted, InUse)
+        int key;            // Key stored in the slot (Employee ID)
+        EmployeeData data;  // Data associated with the key
+    };
+
+    static const int maxTable = 11; // Size of the hash table (prime number to reduce collisions)
+    Slot hashTableArray[maxTable];  // Array to represent the hash table
+    int entries; // Number of valid entries (slots marked as InUse) in the hash table
+
+    // Hash function to calculate the index for a given key
+    int hash(int key) {
+        return key % maxTable; // Simple division hashing
+    }
+
+    // Helper function to determine the next position in the hash table (linear probing)
+    int probe(int pos) {
+        if (pos == maxTable - 1) // If at the end of the table, wrap around to the beginning
+            return 0;
+        else
+            return pos + 1; // Otherwise, move to the next position
+    }
+
+    // Private method to search for a key in the hash table
+    bool search(int searchKey, int& pos) {
+        while (hashTableArray[pos].status != Empty) { // Continue searching until an empty slot is found
+            if (hashTableArray[pos].status == InUse && hashTableArray[pos].key == searchKey) {
+                return true; // Key found
+            } else {
+                pos = probe(pos); // Move to the next position using linear probing
+            }
+        }
+        return false; // Key not found
+    }
+
+    // Constructor to initialize the hash table
+    HashTable() : entries(0) {
+        for (int i = 0; i < maxTable; i++) {
+            hashTableArray[i].status = Empty; // Mark all slots as Empty
+        }
+    }
+
+    // Method to check if the hash table is empty
+    bool isEmpty() const {
+        return entries == 0; // True if no entries are in use
+    }
+
+    // Method to check if the hash table is full
+    bool isFull() const {
+        return entries == maxTable - 1; // True if only one slot is left empty
+    }
+
+    // Method to get the total size of the hash table
+    int getSize() const {
+        return maxTable; // Return the total number of slots
+    }
+
+    // Method to get the current number of valid entries in the hash table
+    int getLength() const {
+        return entries; // Return the number of slots marked as InUse
+    }
+
+    // Method to insert a new key and data into the hash table
+    void insert(int insertKey, const EmployeeData& insertData) {
+        assert(entries < maxTable - 1); // Ensure the table is not full
+        int pos = hash(insertKey); // Calculate the home address for the key
+
+        if (!search(insertKey, pos)) { // If the key does not exist in the table
+            pos = hash(insertKey); // Recalculate the home address
+            while (hashTableArray[pos].status == InUse) { // Find the next available slot
+                pos = probe(pos);
+            }
+            // Insert the key and data into the available slot
+            hashTableArray[pos].status = InUse;
+            hashTableArray[pos].key = insertKey;
+            hashTableArray[pos].data = insertData;
+            entries++; // Increment the number of entries
+        } else {
+            // If the key exists, update the data
+            hashTableArray[pos].data = insertData;
+        }
+    }
+
+    // Method to lookup data associated with a key in the hash table
+    bool lookup(int lookupKey, EmployeeData& lookupData) {
+        int pos = hash(lookupKey); // Calculate the home address for the key
+        if (search(lookupKey, pos)) { // If the key is found
+            lookupData = hashTableArray[pos].data; // Retrieve the data
+            return true;
+        } else {
+            return false; // Key not found
+        }
+    }
+
+    // Method to delete a key and its associated data from the hash table
+    void deleteKey(int deleteKey) {
+        int pos = hash(deleteKey); // Calculate the home address for the key
+        if (search(deleteKey, pos)) { // If the key is found
+            hashTableArray[pos].status = Deleted; // Mark the slot as Deleted
+            entries--; // Decrement the number of entries
+        }
+    }
+
+    // Method to print the contents of the hash table
+    void dump() const {
+        for (int i = 0; i < maxTable; i++) { // Iterate through all slots
+            cout << i << "\t";
+            switch (hashTableArray[i].status) { // Check the status of each slot
+                case InUse:
+                    cout << "In Use\t" << hashTableArray[i].key << endl; // Print InUse slots
+                    break;
+                case Deleted:
+                    cout << "Deleted\t" << hashTableArray[i].key << endl; // Print Deleted slots
+                    break;
+                case Empty:
+                    cout << "Empty" << endl; // Print Empty slots
+                    break;
+            }
+        }
+        cout << endl << "Table size: " << getSize() << ", Number of current entries: " << getLength() << endl;
+    }
+};
+
+
+
+
 class LinkedList {
     private:
       // Node structure for the linked list
@@ -58,6 +204,7 @@ class LinkedList {
       };
 
       Node* head; // Pointer to the head of the linked list
+      Node* tail; // Pointer to the tail of the linked list
 
     public:
       // Default constructor to initialize an empty linked list
@@ -245,6 +392,8 @@ class LinkedList {
         cout << endl;
     }
 
+//--------------------------------------------------------------------------------------->
+
     // Check if the list is empty
     bool isEmpty() const {
         return head == nullptr;
@@ -259,35 +408,38 @@ class LinkedList {
         }
         tail = nullptr;
     }
+//--------------------------------------------------------------------------------------->
 
     // Reverse the linked list
     void reverse() {
         Node* prev = nullptr;
         Node* current = head;
         Node* nextNode = nullptr;
-        while (current != nullptr) {
-            nextNode = current->next;
-            current->next = prev;
-            prev = current;
-            current = nextNode;
-        }
+            while (current != nullptr) {
+                nextNode = current->next;
+                current->next = prev;
+                prev = current;
+                current = nextNode;
+            }
         head = prev;
     }
+//--------------------------------------------------------------------------------------->
 
     // Detect if the list is circular
     bool isCircular() const {
         if (isEmpty()) return false;
-        Node* slow = head;
-        Node* fast = head;
-        while (fast != nullptr && fast->next != nullptr) {
-            slow = slow->next;
-            fast = fast->next->next;
-            if (slow == fast) {
-                return true;
+        Node* Firstptr = head;
+        Node* Secondptr = head;
+            while (Secondptr != nullptr && Secondptr->next != nullptr) {
+                Firstptr = Firstptr->next;
+                Secondptr = Secondptr->next->next;
+                if (Firstptr == Secondptr) {
+                    return true;
+                }
             }
-        }
         return false;
     }
+//--------------------------------------------------------------------------------------->
 
     // Compare two linked lists
     bool compare(const LinkedList& other) const {
@@ -302,7 +454,7 @@ class LinkedList {
         }
         return (current1 == nullptr && current2 == nullptr);
     }
-
+//--------------------------------------------------------------------------------------->
     // Remove duplicates from a sorted list
     void removeDuplicates() {
         if (isEmpty()) return;
@@ -596,6 +748,76 @@ int main() {
 
   // Cleanup
   delete[] randomArray;
+
+//-------------------------------------------------------------------------------------------------->
+
+
+ HashTable employeeTable; // Create a hash table for employee records
+
+    // Predefined employee data
+    vector<tuple<int, string, string, string>> employees = {
+        {101, "John", "Doe", "01-01-2020"},
+        {102, "Jane", "Smith", "02-15-2019"},
+        {103, "Alice", "Johnson", "03-10-2021"},
+        {104, "Bob", "Brown", "04-05-2018"},
+        {105, "Charlie", "Davis", "05-20-2022"}
+    };
+
+    cout << "*******************************" << endl;
+    cout << "Welcome to the Employee Record Management System!" << endl;
+    cout << "*******************************" << endl << endl;
+
+    // Automatically insert employee records into the hash table
+    cout << "Inserting employee records..." << endl;
+    for (const auto& emp : employees) {
+        int empId = get<0>(emp);
+        string firstName = get<2>(emp);
+        string lastName = get<1>(emp);
+        string hireDate = get<3>(emp);
+
+        employeeTable.insert(empId, { lastName, firstName, hireDate });
+        cout << "Employee record added: ID " << empId << " - " << firstName << " " << lastName << endl;
+    }
+    cout << endl;
+
+    // Display the size and number of entries in the hash table
+    cout << "Table size: " << employeeTable.getSize() << ", Number of current entries: " << employeeTable.getLength() << endl << endl;
+
+    // Automatically lookup an employee by ID
+    int lookupId = 103; // Lookup employee with ID 103
+    cout << "Looking up employee with ID " << lookupId << "..." << endl;
+    HashTable::EmployeeData lookupData;
+    if (employeeTable.lookup(lookupId, lookupData)) {
+        cout << "Employee found!" << endl;
+        cout << "First Name: " << lookupData.firstName << endl;
+        cout << "Last Name: " << lookupData.lastName << endl;
+        cout << "Hire Date: " << lookupData.hireDate << endl;
+    } else {
+        cout << "Employee with ID " << lookupId << " not found!" << endl;
+    }
+    cout << endl;
+
+    // Automatically delete an employee record by ID
+    int deleteId = 102; // Delete employee with ID 102
+    cout << "Deleting employee with ID " << deleteId << "..." << endl;
+    employeeTable.deleteKey(deleteId);
+    cout << "Employee with ID " << deleteId << " deleted." << endl << endl;
+
+    // Lookup again to confirm deletion
+    cout << "Looking up employee with ID " << deleteId << " to confirm deletion..." << endl;
+    if (employeeTable.lookup(deleteId, lookupData)) {
+        cout << "Employee found!" << endl;
+        cout << "First Name: " << lookupData.firstName << endl;
+        cout << "Last Name: " << lookupData.lastName << endl;
+        cout << "Hire Date: " << lookupData.hireDate << endl;
+    } else {
+        cout << "Employee with ID " << deleteId << " not found!" << endl;
+    }
+    cout << endl;
+
+    // Dump the contents of the hash table
+    cout << "Hash Table Contents: " << endl;
+    employeeTable.dump();
 
   return 0;
 }
