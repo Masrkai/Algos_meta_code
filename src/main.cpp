@@ -1,10 +1,72 @@
 
 #include <iostream>
-#include <vector>
 #include <cassert>
-
+#include <vector>
 
 using namespace std;
+
+const int maxStackSize = 100;  // Maximum size of the stack
+
+template <class StackElementType>
+class Stack {
+public:
+    Stack();  // Constructor
+    void push(StackElementType item);  // Push an element onto the stack
+    StackElementType pop();  // Pop an element from the stack
+    StackElementType top();  // Get the top element without popping
+    bool isEmpty();  // Check if the stack is empty
+    bool isFull();  // Check if the stack is full
+
+private:
+    StackElementType stackArray[maxStackSize];  // Array to store stack elements
+    int topIndex;  // Index of the top element
+};
+
+// Constructor
+template <class StackElementType>
+Stack<StackElementType>::Stack() {
+    topIndex = -1;  // Initialize topIndex to -1 (empty stack)
+}
+
+// Push operation
+template <class StackElementType>
+void Stack<StackElementType>::push(StackElementType item) {
+    ++topIndex;
+    // Ensure array bounds are not exceeded
+    assert(topIndex < maxStackSize);
+    stackArray[topIndex] = item;
+}
+
+// Pop operation
+template <class StackElementType>
+StackElementType Stack<StackElementType>::pop() {
+    // Ensure array bounds are not exceeded
+    assert(topIndex >= 0);
+    int returnIndex = topIndex;
+    --topIndex;
+    return stackArray[returnIndex];
+}
+
+// Top operation
+template <class StackElementType>
+StackElementType Stack<StackElementType>::top() {
+    // Ensure array bounds are not exceeded
+    assert(topIndex >= 0);
+    return stackArray[topIndex];
+}
+
+// Check if the stack is empty
+template <class StackElementType>
+bool Stack<StackElementType>::isEmpty() {
+    return (topIndex == -1);
+}
+
+// Check if the stack is full
+template <class StackElementType>
+bool Stack<StackElementType>::isFull() {
+    return (topIndex == maxStackSize - 1);
+}
+
 
 // Helper functions for array operations
 class ArrayHelper {
@@ -95,6 +157,22 @@ public:
         assert(!isEmpty()); // Ensure the queue is not empty
         return queueArray[front]; // Return the front element
         }
+
+     // List all elements currently in the queue
+    void listAllElements() {
+        if (isEmpty()) {
+            std::cout << "Queue is empty." << std::endl;
+            return;
+        }
+
+        int current = front;
+        std::cout << "Elements in the queue: ";
+        while (current != rear) {
+            std::cout << queueArray[current] << " ";
+            current = nextPos(current);
+        }
+        std::cout << std::endl;
+    }
 };
 
 
@@ -732,6 +810,45 @@ public:
 
 // Main function to demonstrate functionality
 int main() {
+  //--------------------------------------------------------->
+
+    // Create a stack of integers
+    Stack<int> intStack;
+
+    // Push some elements onto the stack
+    intStack.push(10);
+    intStack.push(20);
+    intStack.push(30);
+
+    // Print the top element
+    std::cout << "Top element: " << intStack.top() << std::endl;
+
+    // Pop elements from the stack
+    std::cout << "Popped element: " << intStack.pop() << std::endl;
+    std::cout << "Popped element: " << intStack.pop() << std::endl;
+
+    // Check if the stack is empty
+    if (intStack.isEmpty()) {
+        std::cout << "The stack is empty." << std::endl;
+    } else {
+        std::cout << "The stack is not empty." << std::endl;
+    }
+
+    // Push more elements
+    intStack.push(40);
+    intStack.push(50);
+
+    // Print the top element again
+    std::cout << "Top element: " << intStack.top() << std::endl;
+
+    // Check if the stack is full
+    if (intStack.isFull()) {
+        std::cout << "The stack is full." << std::endl;
+    } else {
+        std::cout << "The stack is not full." << std::endl;
+    }
+  //--------------------------------------------------------->
+  separate();
 
     Queue<int> q; // Create a queue of integers
 
@@ -818,7 +935,6 @@ int main() {
   delete[] randomArray;
 
 //-------------------------------------------------------------------------------------------------->
-
 
  HashTable PersonTable; // Create a hash table for Person records
 
