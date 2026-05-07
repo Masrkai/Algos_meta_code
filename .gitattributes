@@ -5,11 +5,6 @@
 *.yml linguist-detectable=true
 *.yaml linguist-detectable=true
 
-# Markdown Documentation
-*.md merge=union
-*.md linguist-detectable=true
-*.md linguist-documentation=false
-
 # Bash Scripts
 *.sh linguist-detectable=true
 *.bash linguist-detectable=true
